@@ -20,7 +20,7 @@ up:
 
 .PHONY: down
 down:
-	docker compose down
+	docker compose down --remove-orphans
 
 .PHONY:clean-pre-commit
 clean-pre-commit: ## removes pre-commit hook
