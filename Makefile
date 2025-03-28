@@ -73,3 +73,10 @@ help: ## Show this help.
 pipenv-setup:devdocker ## Run pipenv-setup to update setup.py with latest dependencies
 	docker compose run --rm dev sh -c "pipenv run pipenv install --skip-lock --categories \"pipenvsetup\" && pipenv run pipenv-setup sync --pipfile" && \
 	make run-pre-commit
+
+.PHONY:up-observability
+up-observability: ## Bring up warehouse service in docker-compose
+	export DOCKER_CLIENT_TIMEOUT=300 && export COMPOSE_HTTP_TIMEOUT=300
+	docker compose -f docker-compose.services.observability.yml up -d
+	@echo SigNoz dashboard: "http://localhost:3303"
+	@echo "NOTE: If you see the [Oops! Something went wrong] error in SigNoz dashboard, click on the user icon in the side navigation and log out, then log back in"

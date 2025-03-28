@@ -34,6 +34,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: make up
 
+      - name: up-observability
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: make up-observability
+
       - name: Set correct permissions for tests
         run: |
           sudo chmod -R 777 ${{ github.workspace }}
