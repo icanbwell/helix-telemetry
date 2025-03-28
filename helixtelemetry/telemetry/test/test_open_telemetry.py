@@ -4,14 +4,13 @@ import pytest
 
 from helixtelemetry.telemetry.context.telemetry_context import TelemetryContext
 from helixtelemetry.telemetry.providers.open_telemetry import OpenTelemetry
-from helixtelemetry.telemetry.structures.telemetry_provider import TelemetryProvider
 
 
 @pytest.mark.skip(reason="This test is for manual testing only")
 async def test_open_telemetry_async() -> None:
     # Initialize telemetry
     telemetry_context = TelemetryContext(
-        provider=TelemetryProvider.OPEN_TELEMETRY,
+        provider=OpenTelemetry.telemetry_provider,
         service_name="example-service",
         environment="development",
         attributes=None,

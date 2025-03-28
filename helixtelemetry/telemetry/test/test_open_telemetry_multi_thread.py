@@ -17,7 +17,6 @@ from opentelemetry.trace.propagation.tracecontext import TraceContextTextMapProp
 from helixtelemetry.telemetry.context.telemetry_context import TelemetryContext
 from helixtelemetry.telemetry.providers.open_telemetry import OpenTelemetry
 from helixtelemetry.telemetry.spans.telemetry_span_wrapper import TelemetrySpanWrapper
-from helixtelemetry.telemetry.structures.telemetry_provider import TelemetryProvider
 
 service_name: str = "default-service"
 endpoint: str = "otel-collector:4317"
@@ -75,7 +74,7 @@ async def run_sub_operation(
     telemetry_context = TelemetryContext(
         service_name=service_name,
         environment=environment,
-        provider=TelemetryProvider.OPEN_TELEMETRY,
+        provider=OpenTelemetry.telemetry_provider,
         attributes=None,
         log_level=None,
         instance_name="sub-operation",
@@ -105,7 +104,7 @@ async def test_open_telemetry_multi_thread() -> None:
     telemetry_context = TelemetryContext(
         service_name=service_name,
         environment=environment,
-        provider=TelemetryProvider.OPEN_TELEMETRY,
+        provider=OpenTelemetry.telemetry_provider,
         attributes=None,
         log_level=None,
         instance_name="main-operation",
