@@ -55,7 +55,12 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/icanbwell/helix-telemetry",
     packages=find_packages(),
-    install_requires=[],
+    install_requires=[
+        "dataclasses-json>=0.6.7",
+        "opentelemetry-api>=1.30.0",
+        "opentelemetry-sdk>=1.30.0",
+        "opentelemetry-exporter-otlp>=1.30.0",
+    ],
     classifiers=[
         "Development Status :: 4 - Beta",
         "Programming Language :: Python :: 3",

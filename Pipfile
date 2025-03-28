@@ -10,6 +10,13 @@ url = "https://imranq2.github.io/alpine-wheels/docs/"
 verify_ssl = true
 
 [packages]
+# dataclasses-json is needed for working with JSON data to read from and write to json
+dataclasses-json = ">=0.6.7"
+# ====== For OpenTelemetry ======
+opentelemetry-api = ">=1.30.0"
+opentelemetry-sdk = ">=1.30.0"
+opentelemetry-exporter-otlp = ">=1.30.0"
+# ====== End OpenTelemetry ======
 
 [dev-packages]
 setuptools=">=60.9.3"
