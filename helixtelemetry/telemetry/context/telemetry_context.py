@@ -3,7 +3,6 @@ from typing import Optional, List, Union, Mapping
 
 from dataclasses_json import DataClassJsonMixin
 
-from helixtelemetry.telemetry.providers.null_telemetry import NullTelemetry
 from helixtelemetry.telemetry.structures.telemetry_attribute_value import (
     TelemetryAttributeValue,
 )
@@ -50,7 +49,7 @@ class TelemetryContext(DataClassJsonMixin):
         :return: a null telemetry context
         """
         return TelemetryContext(
-            provider=NullTelemetry.telemetry_provider,
+            provider="NullTelemetry",
             service_name="",
             environment="",
             attributes=None,
