@@ -1,7 +1,4 @@
-from enum import Enum
-
-
-class TelemetryProvider(Enum):
+class TelemetryProvider:
     CONSOLE = "console"
     OPEN_TELEMETRY = "open_telemetry"
     NULL = "null"

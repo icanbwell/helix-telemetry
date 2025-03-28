@@ -64,6 +64,8 @@ class OpenTelemetry(Telemetry):
     Comprehensive OpenTelemetry instrumentation
     """
 
+    telemetry_provider: ClassVar[str] = "OpenTelemetry"
+
     _trace_provider: ClassVar[Optional[TracerProvider]] = None
 
     _meter_provider: ClassVar[Optional[MeterProvider]] = None
@@ -85,39 +87,42 @@ class OpenTelemetry(Telemetry):
         Initialize OpenTelemetry tracer and instrumentation
 
         """
+        super().__init__(
+            telemetry_context=telemetry_context,
+            log_level=log_level,
+        )
         # Unique instance identifier
         self._instance_id = str(uuid.uuid4())
-
-        log_level = telemetry_context.log_level or log_level or "INFO"
 
         self._logger: Logger = logging.getLogger(
             __name__,
         )
-        # get_logger sets the log level to the environment variable LOGLEVEL if it exists
-        self._logger.setLevel(log_level)
-
-        self._telemetry_context = telemetry_context
+        if log_level:
+            # get_logger sets the log level to the environment variable LOGLEVEL if it exists
+            self._logger.setLevel(log_level)
 
         hostname: str = socket.gethostname()
 
         self._metadata: Dict[str, TelemetryAttributeValue] = {
-            "service.name": telemetry_context.service_name,
-            "deployment.environment": telemetry_context.environment,
+            "service.name": self._telemetry_context.service_name,
+            "deployment.environment": self._telemetry_context.environment,
             "host.name": hostname,
             "instance.id": self._instance_id,
-            "instance.name": telemetry_context.instance_name,
+            "instance.name": self._telemetry_context.instance_name,
         }
 
-        if telemetry_context.attributes:
-            self._metadata.update(remove_null_values(telemetry_context.attributes))
+        if self._telemetry_context.attributes:
+            self._metadata.update(
+                remove_null_values(self._telemetry_context.attributes)
+            )
 
         # Create a resource with service details
         # from https://opentelemetry.io/docs/specs/semconv/resource/
         resource_attributes = {
-            ResourceAttributes.SERVICE_NAME: telemetry_context.service_name,
-            ResourceAttributes.DEPLOYMENT_ENVIRONMENT: telemetry_context.environment,
-            ResourceAttributes.SERVICE_INSTANCE_ID: telemetry_context.instance_name,
-            ResourceAttributes.SERVICE_NAMESPACE: telemetry_context.service_namespace,
+            ResourceAttributes.SERVICE_NAME: self._telemetry_context.service_name,
+            ResourceAttributes.DEPLOYMENT_ENVIRONMENT: self._telemetry_context.environment,
+            ResourceAttributes.SERVICE_INSTANCE_ID: self._telemetry_context.instance_name,
+            ResourceAttributes.SERVICE_NAMESPACE: self._telemetry_context.service_namespace,
             ResourceAttributes.HOST_NAME: hostname,
         }
         image_version: Optional[str] = os.getenv("DOCKER_IMAGE_VERSION")
@@ -139,13 +144,13 @@ class OpenTelemetry(Telemetry):
             self._logger.debug(
                 f"Setting up tracing on {hostname}"
                 f" with otel_exporter_otlp_endpoint: {otel_exporter_otlp_endpoint}"
-                f" telemetry_context.tracer_endpoint: {telemetry_context.tracer_endpoint}"
+                f" telemetry_context.tracer_endpoint: {self._telemetry_context.tracer_endpoint}"
             )
 
             self.setup_tracing(
                 resource=resource,
                 write_telemetry_to_console=write_telemetry_to_console,
-                telemetry_context=telemetry_context,
+                telemetry_context=self._telemetry_context,
             )
             # see if the tracers are defined in an environment variable
             telemetry_tracers_text: Optional[str] = os.getenv("TELEMETRY_TRACERS")
@@ -157,14 +162,14 @@ class OpenTelemetry(Telemetry):
                 if telemetry_tracers_text
                 else []
             )
-            if telemetry_context.trace_all_calls:
-                telemetry_tracers.extend(telemetry_context.trace_all_calls)
+            if self._telemetry_context.trace_all_calls:
+                telemetry_tracers.extend(self._telemetry_context.trace_all_calls)
 
         if OpenTelemetry._meter_provider is None:
             self.setup_meters(
                 resource=resource,
                 write_telemetry_to_console=write_telemetry_to_console,
-                telemetry_context=telemetry_context,
+                telemetry_context=self._telemetry_context,
             )
 
     # noinspection PyMethodMayBeStatic

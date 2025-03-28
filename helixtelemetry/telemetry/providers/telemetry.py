@@ -1,8 +1,9 @@
 from abc import abstractmethod, ABC
 from contextlib import asynccontextmanager, contextmanager
 
-from typing import Optional, Dict, Any, AsyncIterator, Iterator, Mapping
+from typing import Optional, Dict, Any, AsyncIterator, Iterator, Mapping, Union
 
+from helixtelemetry.telemetry.context.telemetry_context import TelemetryContext
 from helixtelemetry.telemetry.metrics.telemetry_counter import TelemetryCounter
 from helixtelemetry.telemetry.metrics.telemetry_histogram_counter import (
     TelemetryHistogram,
@@ -25,6 +26,15 @@ class Telemetry(ABC):
     Abstract class for telemetry
 
     """
+
+    def __init__(
+        self,
+        *,
+        telemetry_context: TelemetryContext,
+        log_level: Optional[Union[int, str]],
+    ) -> None:
+        self._telemetry_context: TelemetryContext = telemetry_context
+        self._log_level = log_level
 
     @abstractmethod
     @contextmanager
