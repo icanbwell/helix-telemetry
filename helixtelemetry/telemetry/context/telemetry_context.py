@@ -12,7 +12,7 @@ from helixtelemetry.telemetry.structures.telemetry_tracers import TelemetryTrace
 
 @dataclasses.dataclass
 class TelemetryContext(DataClassJsonMixin):
-    provider: TelemetryProvider
+    provider: str
     """ Provider for the telemetry context """
 
     service_name: str

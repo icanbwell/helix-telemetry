@@ -1,6 +1,17 @@
+import logging
 from contextlib import contextmanager, asynccontextmanager
-from typing import Optional, Dict, Any, Iterator, AsyncIterator, override, Mapping
-
+from logging import Logger
+from typing import (
+    Optional,
+    Dict,
+    Any,
+    Iterator,
+    AsyncIterator,
+    override,
+    Mapping,
+    Union,
+    ClassVar,
+)
 
 from opentelemetry.metrics import NoOpCounter, NoOpUpDownCounter, NoOpHistogram
 
@@ -24,12 +35,21 @@ from helixtelemetry.telemetry.structures.telemetry_parent import TelemetryParent
 
 
 class NullTelemetry(Telemetry):
+    telemetry_provider: ClassVar[str] = "NullTelemetry"
+
     def __init__(
         self,
         *,
         telemetry_context: TelemetryContext,
+        log_level: Optional[Union[int, str]],
     ) -> None:
-        self._telemetry_context: TelemetryContext = telemetry_context
+        super().__init__(
+            telemetry_context=telemetry_context,
+            log_level=log_level,
+        )
+        self._logger: Logger = logging.getLogger(__name__)
+        # get_logger sets the log level to the environment variable LOGLEVEL if it exists
+        self._logger.setLevel(log_level or "INFO")
 
     @override
     def track_exception(
