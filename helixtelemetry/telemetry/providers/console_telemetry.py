@@ -211,17 +211,8 @@ class ConsoleTelemetry(Telemetry):
         description: str,
         telemetry_parent: Optional[TelemetryParent],
         attributes: Optional[Mapping[str, TelemetryAttributeValue]] = None,
+        add_metadata: bool = True,
     ) -> TelemetryCounter:
-        """
-        Get a counter metric
-
-        :param name: Name of the counter
-        :param unit: Unit of the counter
-        :param description: Description
-        :param attributes: Optional attributes
-        :param telemetry_parent: telemetry parent
-        :return: The Counter metric
-        """
         return TelemetryCounter(
             counter=NoOpCounter(
                 name=name,

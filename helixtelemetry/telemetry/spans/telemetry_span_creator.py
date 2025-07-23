@@ -141,6 +141,7 @@ class TelemetrySpanCreator:
         description: str,
         telemetry_parent: Optional[TelemetryParent],
         attributes: Optional[Mapping[str, TelemetryAttributeValue]] = None,
+        add_metadata: bool = True,
     ) -> TelemetryCounter:
         """
         Get a counter metric
@@ -158,6 +159,7 @@ class TelemetrySpanCreator:
             description=description,
             attributes=attributes,
             telemetry_parent=telemetry_parent,
+            add_metadata=add_metadata,
         )
 
     def get_telemetry_up_down_counter(
