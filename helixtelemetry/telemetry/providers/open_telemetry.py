@@ -563,7 +563,7 @@ class OpenTelemetry(Telemetry):
                         {
                             key: self._metadata[key]
                             for key in add_metadata
-                            if self._metadata[key]
+                            if self._metadata.get(key)
                         }
                         if add_metadata
                         else {}
