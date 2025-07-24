@@ -540,7 +540,7 @@ class OpenTelemetry(Telemetry):
         description: str,
         telemetry_parent: Optional[TelemetryParent],
         attributes: Optional[Mapping[str, TelemetryAttributeValue]] = None,
-        add_metadata: bool = True,
+        add_metadata: Optional[List[str]] = None,
     ) -> TelemetryCounter:
         """
         Get a counter metric
@@ -559,7 +559,15 @@ class OpenTelemetry(Telemetry):
         combined_attributes: Mapping[str, TelemetryAttributeValueWithoutNone] = (
             append_mappings(
                 [
-                    self._metadata if add_metadata else {},
+                    (
+                        {
+                            key: self._metadata[key]
+                            for key in add_metadata
+                            if self._metadata[key]
+                        }
+                        if add_metadata
+                        else {}
+                    ),
                     telemetry_parent.attributes if telemetry_parent else {},
                     attributes,
                 ]

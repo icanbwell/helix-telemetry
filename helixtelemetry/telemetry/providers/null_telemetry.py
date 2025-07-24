@@ -11,6 +11,7 @@ from typing import (
     Mapping,
     Union,
     ClassVar,
+    List,
 )
 
 from opentelemetry.metrics import NoOpCounter, NoOpUpDownCounter, NoOpHistogram
@@ -112,7 +113,7 @@ class NullTelemetry(Telemetry):
         description: str,
         telemetry_parent: Optional[TelemetryParent],
         attributes: Optional[Mapping[str, TelemetryAttributeValue]] = None,
-        add_metadata: bool = True,
+        add_metadata: Optional[List[str]] = None,
     ) -> TelemetryCounter:
         """
         Get a counter metric

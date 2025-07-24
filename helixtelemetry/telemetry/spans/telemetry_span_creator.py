@@ -2,7 +2,7 @@ import logging
 import uuid
 from contextlib import asynccontextmanager, contextmanager
 from logging import Logger
-from typing import Optional, Dict, Any, AsyncGenerator, Generator, Mapping
+from typing import Optional, Dict, Any, AsyncGenerator, Generator, Mapping, List
 
 from helixtelemetry.telemetry.context.telemetry_context import TelemetryContext
 from helixtelemetry.telemetry.metrics.telemetry_counter import TelemetryCounter
@@ -141,7 +141,7 @@ class TelemetrySpanCreator:
         description: str,
         telemetry_parent: Optional[TelemetryParent],
         attributes: Optional[Mapping[str, TelemetryAttributeValue]] = None,
-        add_metadata: bool = True,
+        add_metadata: Optional[List[str]] = None,
     ) -> TelemetryCounter:
         """
         Get a counter metric
