@@ -72,6 +72,8 @@ class Telemetry(ABC):
         attributes: Optional[Mapping[str, TelemetryAttributeValue]] = None,
         telemetry_parent: Optional[TelemetryParent],
         start_time: int | None = None,
+        add_metadata: Optional[List[str]] = None,
+        add_telemetry_attribute: Optional[List[str]] = None,
     ) -> AsyncIterator[TelemetrySpanWrapper]:
         """
         Start a new span

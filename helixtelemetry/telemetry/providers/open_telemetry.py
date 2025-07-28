@@ -330,6 +330,8 @@ class OpenTelemetry(Telemetry):
         attributes: Optional[Mapping[str, TelemetryAttributeValue]] = None,
         telemetry_parent: Optional[TelemetryParent],
         start_time: int | None = None,
+        add_metadata: Optional[List[str]] = None,
+        add_telemetry_attribute: Optional[List[str]] = None,
     ) -> AsyncIterator[TelemetrySpanWrapper]:
         """
         Async version of trace with parent trace support
@@ -343,8 +345,24 @@ class OpenTelemetry(Telemetry):
         combined_attributes: Mapping[str, TelemetryAttributeValueWithoutNone] = (
             append_mappings(
                 [
-                    self._metadata,
-                    telemetry_parent.attributes if telemetry_parent else {},
+                    (
+                        {
+                            key: self._metadata[key]
+                            for key in add_metadata
+                            if self._metadata.get(key)
+                        }
+                        if add_metadata
+                        else {}
+                    ),
+                    (
+                        {
+                            key: telemetry_parent.attributes.get(key)  # type: ignore
+                            for key in add_telemetry_attribute
+                            if telemetry_parent.attributes.get(key)  # type: ignore
+                        }
+                        if add_telemetry_attribute and telemetry_parent
+                        else {}
+                    ),
                     attributes,
                 ]
             )
