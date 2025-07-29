@@ -80,7 +80,7 @@ class TelemetrySpanCreator:
                 attributes=attributes,
                 telemetry_parent=telemetry_parent,
                 start_time=start_time,
-                add_attribute=add_attribute
+                add_attribute=add_attribute,
             ) as span:
                 yield span
         else:

@@ -343,15 +343,15 @@ class OpenTelemetry(Telemetry):
         """
         additional_attributes = {**self._metadata}
         if telemetry_parent:
-            additional_attributes.update(telemetry_parent.attributes)
+            additional_attributes.update(telemetry_parent.attributes)  # type: ignore
         combined_attributes: Mapping[str, TelemetryAttributeValueWithoutNone] = (
             append_mappings(
                 [
                     (
                         {
-                            key: additional_attributes.get(key)  # type: ignore
+                            key: additional_attributes.get(key)
                             for key in add_attribute
-                            if key in additional_attributes  # type: ignore
+                            if key in additional_attributes
                         }
                         if add_attribute
                         else {}
@@ -569,17 +569,15 @@ class OpenTelemetry(Telemetry):
 
         additional_attributes = {**self._metadata}
         if telemetry_parent:
-            additional_attributes.update(telemetry_parent.attributes)
-        print(f"additional_attributes: {additional_attributes}")  # DEBUG
-        print(f"add_attribute: {add_attribute}")  # DEBUG
+            additional_attributes.update(telemetry_parent.attributes)  # type: ignore
         combined_attributes: Mapping[str, TelemetryAttributeValueWithoutNone] = (
             append_mappings(
                 [
                     (
                         {
-                            key: additional_attributes[key]  # type: ignore
+                            key: additional_attributes[key]
                             for key in add_attribute
-                            if key in additional_attributes  # type: ignore
+                            if key in additional_attributes
                         }
                         if add_attribute
                         else {}
