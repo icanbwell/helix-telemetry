@@ -61,8 +61,7 @@ class TelemetrySpanCreator:
         attributes: Optional[Mapping[str, TelemetryAttributeValue]],
         telemetry_parent: Optional[TelemetryParent],
         start_time: int | None = None,
-        add_metadata: Optional[List[str]] = None,
-        add_telemetry_attribute: Optional[List[str]] = None,
+        add_attribute: Optional[List[str]] = None,
     ) -> AsyncGenerator[TelemetrySpanWrapper, None]:
         """
         Create a telemetry span if telemetry is available else return a null context
@@ -81,8 +80,7 @@ class TelemetrySpanCreator:
                 attributes=attributes,
                 telemetry_parent=telemetry_parent,
                 start_time=start_time,
-                add_metadata=add_metadata,
-                add_telemetry_attribute=add_telemetry_attribute,
+                add_attribute=add_attribute
             ) as span:
                 yield span
         else:
@@ -145,7 +143,7 @@ class TelemetrySpanCreator:
         description: str,
         telemetry_parent: Optional[TelemetryParent],
         attributes: Optional[Mapping[str, TelemetryAttributeValue]] = None,
-        add_metadata: Optional[List[str]] = None,
+        add_attribute: Optional[List[str]] = None,
     ) -> TelemetryCounter:
         """
         Get a counter metric
@@ -163,7 +161,7 @@ class TelemetrySpanCreator:
             description=description,
             attributes=attributes,
             telemetry_parent=telemetry_parent,
-            add_metadata=add_metadata,
+            add_attribute=add_attribute,
         )
 
     def get_telemetry_up_down_counter(

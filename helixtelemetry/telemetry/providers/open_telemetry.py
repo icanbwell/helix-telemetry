@@ -330,8 +330,7 @@ class OpenTelemetry(Telemetry):
         attributes: Optional[Mapping[str, TelemetryAttributeValue]] = None,
         telemetry_parent: Optional[TelemetryParent],
         start_time: int | None = None,
-        add_metadata: Optional[List[str]] = None,
-        add_telemetry_attribute: Optional[List[str]] = None,
+        add_attribute: Optional[List[str]] = None,
     ) -> AsyncIterator[TelemetrySpanWrapper]:
         """
         Async version of trace with parent trace support
@@ -342,25 +341,19 @@ class OpenTelemetry(Telemetry):
         :param start_time: (Optional) Start time of the span
         :return: Async context manager
         """
+        additional_attributes = {**self._metadata}
+        if telemetry_parent:
+            additional_attributes.update(telemetry_parent.attributes)
         combined_attributes: Mapping[str, TelemetryAttributeValueWithoutNone] = (
             append_mappings(
                 [
                     (
                         {
-                            key: self._metadata[key]
-                            for key in add_metadata
-                            if self._metadata.get(key)
+                            key: additional_attributes.get(key)  # type: ignore
+                            for key in add_attribute
+                            if additional_attributes.get(key)  # type: ignore
                         }
-                        if add_metadata
-                        else {}
-                    ),
-                    (
-                        {
-                            key: telemetry_parent.attributes.get(key)  # type: ignore
-                            for key in add_telemetry_attribute
-                            if telemetry_parent.attributes.get(key)  # type: ignore
-                        }
-                        if add_telemetry_attribute and telemetry_parent
+                        if add_attribute
                         else {}
                     ),
                     attributes,
@@ -558,7 +551,7 @@ class OpenTelemetry(Telemetry):
         description: str,
         telemetry_parent: Optional[TelemetryParent],
         attributes: Optional[Mapping[str, TelemetryAttributeValue]] = None,
-        add_metadata: Optional[List[str]] = None,
+        add_attribute: Optional[List[str]] = None,
     ) -> TelemetryCounter:
         """
         Get a counter metric
@@ -574,19 +567,21 @@ class OpenTelemetry(Telemetry):
         if name in OpenTelemetry._counters:
             return OpenTelemetry._counters[name]
 
+        additional_attributes = {**self._metadata}
+        if telemetry_parent:
+            additional_attributes.update(telemetry_parent.attributes)
         combined_attributes: Mapping[str, TelemetryAttributeValueWithoutNone] = (
             append_mappings(
                 [
                     (
                         {
-                            key: self._metadata[key]
-                            for key in add_metadata
-                            if self._metadata.get(key)
+                            key: additional_attributes.get(key)  # type: ignore
+                            for key in add_attribute
+                            if additional_attributes.get(key)  # type: ignore
                         }
-                        if add_metadata
+                        if add_attribute
                         else {}
                     ),
-                    telemetry_parent.attributes if telemetry_parent else {},
                     attributes,
                 ]
             )
