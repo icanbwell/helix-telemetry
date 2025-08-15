@@ -1,4 +1,4 @@
-from typing import Optional, Dict, Union, Mapping
+from typing import Optional, Dict, Union, Mapping, Set, Tuple
 
 from opentelemetry.context import Context
 from opentelemetry.metrics import Counter
@@ -28,7 +28,9 @@ class TelemetryCounter:
         self._counter: Counter = counter
         self._attributes: Optional[Mapping[str, TelemetryAttributeValue]] = attributes
         self._telemetry_parent: Optional[TelemetryParent] = telemetry_parent
-        self._initialized_time_series: Set[tuple[str, TelemetryAttributeValue]] = set()
+        self._initialized_time_series: Set[
+            Tuple[Tuple[str, TelemetryAttributeValueWithoutNone], ...]
+        ] = set()
 
     def add(
         self,
@@ -49,9 +51,7 @@ class TelemetryCounter:
         # Initialize the time series if it hasn't been initialized yet
         time_series_key = tuple(sorted(combined_attributes.items()))
         if time_series_key not in self._initialized_time_series:
-            self._counter.add(
-                amount=0, attributes=combined_attributes, context=context
-            )
+            self._counter.add(amount=0, attributes=combined_attributes, context=context)
             self._initialized_time_series.add(time_series_key)
 
         self._counter.add(
