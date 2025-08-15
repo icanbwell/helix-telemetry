@@ -1,4 +1,5 @@
-from typing import Optional, Dict, Union, Mapping
+from typing import Optional, Dict, Union, Mapping, Set, Tuple
+import threading
 
 from opentelemetry.context import Context
 from opentelemetry.metrics import Counter
@@ -28,6 +29,12 @@ class TelemetryCounter:
         self._counter: Counter = counter
         self._attributes: Optional[Mapping[str, TelemetryAttributeValue]] = attributes
         self._telemetry_parent: Optional[TelemetryParent] = telemetry_parent
+        self._initialized_time_series: Set[
+            Tuple[Tuple[str, TelemetryAttributeValueWithoutNone], ...]
+        ] = set()
+        self._lock = threading.Lock()
+        # NOTE: _initialized_time_series can grow unbounded if there are many unique attribute combinations.
+        # Consider implementing cleanup/eviction if this becomes a problem.
 
     def add(
         self,
@@ -44,6 +51,15 @@ class TelemetryCounter:
                 ]
             )
         )
+
+        # Initialize the time series if it hasn't been initialized yet
+        time_series_key = tuple(sorted(combined_attributes.items()))
+        with self._lock:
+            if time_series_key not in self._initialized_time_series:
+                self._counter.add(
+                    amount=0, attributes=combined_attributes, context=context
+                )
+                self._initialized_time_series.add(time_series_key)
 
         self._counter.add(
             amount=amount, attributes=combined_attributes, context=context
