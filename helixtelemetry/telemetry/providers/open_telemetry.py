@@ -586,7 +586,6 @@ class OpenTelemetry(Telemetry):
                 ]
             )
         )
-        print(f"combined_attributes: {combined_attributes}")  # DEBUG
 
         meter: Meter = metrics.get_meter(
             name=self._telemetry_context.service_name,
