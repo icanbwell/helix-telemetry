@@ -330,6 +330,7 @@ class OpenTelemetry(Telemetry):
         attributes: Optional[Mapping[str, TelemetryAttributeValue]] = None,
         telemetry_parent: Optional[TelemetryParent],
         start_time: int | None = None,
+        add_attribute: Optional[List[str]] = None,
     ) -> AsyncIterator[TelemetrySpanWrapper]:
         """
         Async version of trace with parent trace support
@@ -340,11 +341,21 @@ class OpenTelemetry(Telemetry):
         :param start_time: (Optional) Start time of the span
         :return: Async context manager
         """
+        additional_attributes = {**self._metadata}
+        if telemetry_parent:
+            additional_attributes.update(telemetry_parent.attributes)  # type: ignore
         combined_attributes: Mapping[str, TelemetryAttributeValueWithoutNone] = (
             append_mappings(
                 [
-                    self._metadata,
-                    telemetry_parent.attributes if telemetry_parent else {},
+                    (
+                        {
+                            key: additional_attributes.get(key)
+                            for key in add_attribute
+                            if key in additional_attributes
+                        }
+                        if add_attribute
+                        else {}
+                    ),
                     attributes,
                 ]
             )
@@ -540,6 +551,7 @@ class OpenTelemetry(Telemetry):
         description: str,
         telemetry_parent: Optional[TelemetryParent],
         attributes: Optional[Mapping[str, TelemetryAttributeValue]] = None,
+        add_attribute: Optional[List[str]] = None,
     ) -> TelemetryCounter:
         """
         Get a counter metric
@@ -551,12 +563,25 @@ class OpenTelemetry(Telemetry):
         :param telemetry_parent: Parent telemetry context
         :return: The Counter metric
         """
+        # check if we already have a counter for this name
+        if name in OpenTelemetry._counters:
+            return OpenTelemetry._counters[name]
 
+        additional_attributes = {**self._metadata}
+        if telemetry_parent:
+            additional_attributes.update(telemetry_parent.attributes)  # type: ignore
         combined_attributes: Mapping[str, TelemetryAttributeValueWithoutNone] = (
             append_mappings(
                 [
-                    self._metadata,
-                    telemetry_parent.attributes if telemetry_parent else {},
+                    (
+                        {
+                            key: additional_attributes[key]
+                            for key in add_attribute
+                            if key in additional_attributes
+                        }
+                        if add_attribute
+                        else {}
+                    ),
                     attributes,
                 ]
             )
@@ -567,10 +592,6 @@ class OpenTelemetry(Telemetry):
             meter_provider=OpenTelemetry._meter_provider,
             attributes=combined_attributes,
         )
-
-        # check if we already have a counter for this name
-        if name in OpenTelemetry._counters:
-            return OpenTelemetry._counters[name]
 
         counter: Counter = meter.create_counter(
             name=name,
@@ -608,6 +629,10 @@ class OpenTelemetry(Telemetry):
         :param telemetry_parent: Parent telemetry context
         :return: The Counter metric
         """
+        # check if we already have an up_down_counter for this name
+        if name in OpenTelemetry._up_down_counters:
+            return OpenTelemetry._up_down_counters[name]
+
         combined_attributes: Mapping[str, TelemetryAttributeValueWithoutNone] = (
             append_mappings(
                 [
@@ -623,10 +648,6 @@ class OpenTelemetry(Telemetry):
             meter_provider=OpenTelemetry._meter_provider,
             attributes=combined_attributes,
         )
-
-        # check if we already have an up_down_counter for this name
-        if name in OpenTelemetry._up_down_counters:
-            return OpenTelemetry._up_down_counters[name]
 
         up_down_counter: UpDownCounter = meter.create_up_down_counter(
             name=name,
@@ -664,6 +685,10 @@ class OpenTelemetry(Telemetry):
         :param telemetry_parent: Parent telemetry context
         :return: The Counter metric
         """
+        # check if we already have a histogram for this name
+        if name in OpenTelemetry._histograms:
+            return OpenTelemetry._histograms[name]
+
         combined_attributes: Mapping[str, TelemetryAttributeValueWithoutNone] = (
             append_mappings(
                 [
@@ -679,10 +704,6 @@ class OpenTelemetry(Telemetry):
             meter_provider=OpenTelemetry._meter_provider,
             attributes=combined_attributes,
         )
-
-        # check if we already have a histogram for this name
-        if name in OpenTelemetry._histograms:
-            return OpenTelemetry._histograms[name]
 
         histogram: Histogram = meter.create_histogram(
             name=name,

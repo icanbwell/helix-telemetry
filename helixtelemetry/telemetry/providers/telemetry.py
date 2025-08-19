@@ -1,7 +1,7 @@
 from abc import abstractmethod, ABC
 from contextlib import asynccontextmanager, contextmanager
 
-from typing import Optional, Dict, Any, AsyncIterator, Iterator, Mapping, Union
+from typing import Optional, Dict, Any, AsyncIterator, Iterator, Mapping, Union, List
 
 from helixtelemetry.telemetry.context.telemetry_context import TelemetryContext
 from helixtelemetry.telemetry.metrics.telemetry_counter import TelemetryCounter
@@ -72,6 +72,7 @@ class Telemetry(ABC):
         attributes: Optional[Mapping[str, TelemetryAttributeValue]] = None,
         telemetry_parent: Optional[TelemetryParent],
         start_time: int | None = None,
+        add_attribute: Optional[List[str]] = None,
     ) -> AsyncIterator[TelemetrySpanWrapper]:
         """
         Start a new span
@@ -131,6 +132,7 @@ class Telemetry(ABC):
         description: str,
         telemetry_parent: Optional[TelemetryParent],
         attributes: Optional[Mapping[str, TelemetryAttributeValue]] = None,
+        add_attribute: Optional[List[str]] = None,
     ) -> TelemetryCounter:
         """
         Get a counter metric

@@ -11,6 +11,7 @@ from typing import (
     Mapping,
     Union,
     ClassVar,
+    List,
 )
 
 from opentelemetry.metrics import NoOpCounter, NoOpUpDownCounter, NoOpHistogram
@@ -96,6 +97,7 @@ class NullTelemetry(Telemetry):
         attributes: Optional[Mapping[str, TelemetryAttributeValue]] = None,
         telemetry_parent: Optional[TelemetryParent],
         start_time: int | None = None,
+        add_attribute: Optional[List[str]] = None,
     ) -> AsyncIterator[TelemetrySpanWrapper]:
         yield NullTelemetrySpanWrapper(
             name=name,
@@ -112,10 +114,10 @@ class NullTelemetry(Telemetry):
         description: str,
         telemetry_parent: Optional[TelemetryParent],
         attributes: Optional[Mapping[str, TelemetryAttributeValue]] = None,
+        add_attribute: Optional[List[str]] = None,
     ) -> TelemetryCounter:
         """
         Get a counter metric
-
         :param name: Name of the counter
         :param unit: Unit of the counter
         :param description: Description
